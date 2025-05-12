@@ -1,18 +1,18 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-import openai
+from openai import OpenAI
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import os
 
-# OpenAI API anahtarı
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# OpenAI istemcisi (yeni v1 yapısı)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # FastAPI uygulaması
 app = FastAPI()
 
-# CORS ayarı – doğru domain (sonunda slash olmamalı!)
+# CORS ayarı – slash olmadan domain tanımla
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://www.batuhandurmaz.com"],
@@ -21,20 +21,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Input modeli
+# Girdi modeli
 class InputData(BaseModel):
     keyword: str
     text: str
 
-# Embedding alma fonksiyonu
+# Vektör (embedding) alma fonksiyonu
 def get_embedding(text: str):
-    response = openai.Embedding.create(
+    response = client.embeddings.create(
         input=text,
         model="text-embedding-3-small"
     )
-    return response["data"][0]["embedding"]
+    return response.data[0].embedding
 
-# Analiz endpointi
+# Benzerlik hesaplama endpoint'i
 @app.post("/analyze")
 async def analyze_similarity(data: InputData):
     try:
