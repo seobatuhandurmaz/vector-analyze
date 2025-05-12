@@ -12,10 +12,10 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # FastAPI uygulaması
 app = FastAPI()
 
-# CORS ayarı – GÜVENLİ YAYIN İÇİN domain ile sınırla
+# CORS ayarı – doğru domain (sonunda slash olmamalı!)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://www.batuhandurmaz.com/"],
+    allow_origins=["https://www.batuhandurmaz.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
